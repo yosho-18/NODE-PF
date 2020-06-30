@@ -170,11 +170,7 @@ for i in range(M + 3):
         y = adjustment[i]
         #zeta[j][i] = zeta[j][i] / adjustment[i]
         xi[j][i] = xi[j][i] / np.conjugate(adjustment[i])
-"""for i in range(M + 3):
-    for j in range(M + 3):
-        y = adjustment[i]
-        xi[j][i] = xi[j][i] / np.conjugate(adjustment[i])"""
-
+        
 confirm = np.conjugate(xi.T).dot(zeta)
 # print(np.diag(confirm))
 # print(zeta[:, 4])
