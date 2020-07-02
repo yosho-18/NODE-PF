@@ -6,12 +6,13 @@ import matplotlib.pyplot as plt
 
 
 # Extended Dynamic Mode Decomposition
-sai_1 = lambda x, y: 1
-sai_2 = lambda x, y: 2 * x
-sai_3 = lambda x, y: 4 * x**2 - 2
-sai_4 = lambda x, y: 8 * x**3 - 12 * x
-sai_5 = lambda x, y: 16 * x**4 - 48 * x**2 + 12
-sai_6 = lambda x, y: 1 * (2 * y)
+sai_1 = lambda x: 1
+sai_2 = lambda x: 2 * x
+sai_3 = lambda x: 4 * x**2 - 2
+sai_4 = lambda x: 8 * x**3 - 12 * x
+sai_5 = lambda x: 16 * x**4 - 48 * x**2 + 12
+sai_6 = lambda x: 32 * x**5 - 160 * x ** 3 + 120 * x
+"""sai_6 = lambda x, y: 1 * (2 * y)
 sai_7 = lambda x, y: 2 * x * (2 * y)
 sai_8 = lambda x, y: (4 * x**2 - 2) * (2 * y)
 sai_9 = lambda x, y: (8 * x**3 - 12 * x) * (2 * y)
@@ -30,17 +31,17 @@ sai_21 = lambda x, y: 1 * (16 * y**4 - 48 * y**2 + 12)
 sai_22 = lambda x, y: 2 * x * (16 * y**4 - 48 * y**2 + 12)
 sai_23 = lambda x, y: (4 * x**2 - 2) * (16 * y**4 - 48 * y**2 + 12)
 sai_24 = lambda x, y: (8 * x**3 - 12 * x) * (16 * y**4 - 48 * y**2 + 12)
-sai_25 = lambda x, y: (16 * x**4 - 48 * x**2 + 12) * (16 * y**4 - 48 * y**2 + 12)
+sai_25 = lambda x, y: (16 * x**4 - 48 * x**2 + 12) * (16 * y**4 - 48 * y**2 + 12)"""
 
 
-sai = lambda x, y: np.array([sai_1(x, y), sai_2(x, y), sai_3(x, y), sai_4(x, y), sai_5(x, y)
-                             , sai_6(x, y), sai_7(x, y), sai_8(x, y), sai_9(x, y), sai_10(x, y)
-                             , sai_11(x, y), sai_12(x, y), sai_13(x, y), sai_14(x, y), sai_15(x, y)
-                             , sai_16(x, y), sai_17(x, y), sai_18(x, y), sai_19(x, y), sai_20(x, y)
-                             , sai_21(x, y), sai_22(x, y), sai_23(x, y), sai_24(x, y), sai_25(x, y)])
+sai = lambda x: np.array([sai_1(x), sai_2(x), sai_3(x), sai_4(x), sai_5(x), sai_6(x)])
+""", sai_6(x, y), sai_7(x, y), sai_8(x, y), sai_9(x, y), sai_10(x, y)
+, sai_11(x, y), sai_12(x, y), sai_13(x, y), sai_14(x, y), sai_15(x, y)
+, sai_16(x, y), sai_17(x, y), sai_18(x, y), sai_19(x, y), sai_20(x, y)
+, sai_21(x, y), sai_22(x, y), sai_23(x, y), sai_24(x, y), sai_25(x, y)])"""
 
 N = 10000
-data_name = "Duffing_oscillator"  #'spectrum' , gausu_dis 'Linear''Discrete_Linear，Duffing_oscillator', Discrete_Linear Discrete_Linear_diag gausu_dis
+data_name = "GBM"  #'spectrum' , gausu_dis 'Linear''Discrete_Linear，Duffing_oscillator', Discrete_Linear Discrete_Linear_diag gausu_dis
 def data_Preprocessing(tr_val_te, cut):
     data = np.loadtxt(('./data/%s_%s.csv' % (data_name, tr_val_te)), delimiter=',', dtype=np.float64)[:cut]
     return data
@@ -80,8 +81,8 @@ y_data = data_Preprocessing("train_y", N)
 # print(G.dot(G))
 # K = np.linalg.inv(G.T.dot(G)).dot(G).dot(A)  # G：5*5、HybridKoopman Operatorだから？
 # p = np.linalg.inv(G).dot(A)
-G = 1 / N * np.sum([np.outer(sai(x_data[i, 0], x_data[i, 1]).T, (sai(x_data[i, 0], x_data[i, 1]))) for i in range(N)], axis=0)  # 本当はエルミート
-A = 1 / N * np.sum([np.outer(sai(x_data[i, 0], x_data[i, 1]).T, (sai(y_data[i, 0], y_data[i, 1]))) for i in range(N)], axis=0)
+G = 1 / N * np.sum([np.outer(sai(x_data[i]).T, (sai(x_data[i]))) for i in range(N)], axis=0)  # 本当はエルミート
+A = 1 / N * np.sum([np.outer(sai(x_data[i]).T, (sai(y_data[i]))) for i in range(N)], axis=0)
 # print(sai(x_data[2, 0], x_data[2, 1]).T, (sai(y_data[2, 0], y_data[2, 1])))
 # k = sai(x_data[2, 0], x_data[2, 1]).T
 # p = sai(x_data[2, 0], x_data[2, 1])
@@ -106,6 +107,22 @@ graph(mu_real, mu_imag, "eigenvalue", "scatter")"""
 
 K = np.linalg.pinv(G).dot(A)
 P = np.conjugate(K.T)
+
+rho = sai(x_data[0]).T
+for _ in range(10):
+    rho = P.dot(rho)
+    print(rho)
+
+exit()
+
+
+
+
+
+
+
+
+
 mu, w, xi = la.eig(K, left=True, right=True)
 
 mu_real = [i.real for i in mu]
@@ -170,7 +187,7 @@ for i in range(M + 3):
         y = adjustment[i]
         #zeta[j][i] = zeta[j][i] / adjustment[i]
         xi[j][i] = xi[j][i] / np.conjugate(adjustment[i])
-        
+
 confirm = np.conjugate(xi.T).dot(zeta)
 # print(np.diag(confirm))
 # print(zeta[:, 4])
